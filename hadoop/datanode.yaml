@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datanode
+spec:
+  selector:
+    matchLabels:
+      app: datanode # == .spec.template.metadata.lables
+  template:
+    metadata:
+      labels:
+        app: datanode # == .spec.selector.matchLabels
+    spec:
+      hostname: datanode
+      containers:
+        - name: datanode
+          image: apache/hadoop:3.3.6
+          command:
+            - /opt/starter.sh
+            - hdfs
+            - datanode
+          ports:
+            - name: http
+              containerPort: 9864
+            - name: transfer
+              containerPort: 9866
+            - name: ipc
+              containerPort: 9867
+          envFrom:
+            - configMapRef:
+                name: hadoop-conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: datanode
+spec:
+  # type: ClusterIP
+  type: NodePort
+  selector:
+    app: datanode # == pod template: labels
+  ports:
+    - protocol: TCP
+      name: http
+      port: 9864
+      targetPort: 9864 # == pod template: spec ports container port
+      nodePort: 30864 # The range of valid ports is 30000-32767
+    - protocol: TCP
+      name: transfer
+      port: 9866
+      targetPort: 9866
+    - protocol: TCP
+      name: ipc
+      port: 9867
+      targetPort: 9867
+
