@@ -93,7 +93,7 @@ hdfs dfs -cat output/*
 - Datanode: [http://localhost:9864](http://localhost:9864)
 - ResourceManager: [http://localhost:8088](http://localhost:8088)
 - NodeManager: [http://localhost:8042](http://localhost:8042)
-- HistoryServer: [http://localhost:8188](http://localhost:8188)
+- JobHistory: [http://localhost:8188](http://localhost:8188)
 
 ### Namenode
 
@@ -111,7 +111,7 @@ hdfs dfs -cat output/*
 
 ![NodeManager](/images/nodemanager.png)
 
-### HistoryServer
+### JobHistory
 
-![HistoryServer](/images/historyserver.png)
+![JobHistory](/images/jobhistory.png)
 
