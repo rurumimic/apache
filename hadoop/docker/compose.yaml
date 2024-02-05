@@ -1,17 +1,65 @@
 services:
-   namenode:
-      image: apache/hadoop:3.3.6
-      hostname: namenode
-      command: ["hdfs", "namenode"]
-      ports:
-        - 9870:9870
-      env_file:
-        - ./config
-      environment:
-          ENSURE_NAMENODE_DIR: "/tmp/hadoop-root/dfs/name"
-   datanode:
-      image: apache/hadoop:3.3.6
-      command: ["hdfs", "datanode"]
-      env_file:
-        - ./config
+  namenode:
+    image: apache/hadoop:3.3.6
+    hostname: namenode
+    command: ["hdfs", "namenode"]
+    ports:
+      - 8020:8020 # rpc
+      - 9870:9870 # http
+    environment:
+      HADOOP_HOME: "/opt/hadoop"
+      ENSURE_NAMENODE_DIR: "/tmp/hadoop-root/dfs/name"
+    env_file:
+      - ./config
+  datanode:
+    image: apache/hadoop:3.3.6
+    command: ["hdfs", "datanode"]
+    environment:
+      HADOOP_HOME: "/opt/hadoop"
+    env_file:
+      - ./config
+    ports:
+      - 9864:9864 # http
+      - 9866:9866 # transfer
+      - 9867:9867 # ipc
+  resourcemanager:
+    image: apache/hadoop:3.3.6
+    hostname: resourcemanager
+    command: ["yarn", "resourcemanager"]
+    environment:
+      HADOOP_HOME: "/opt/hadoop"
+    env_file:
+      - ./config
+    ports:
+      - 8030:8030 # resourcemanager scheduler
+      - 8031:8031 # resourcemanager resource-tracker
+      - 8032:8032 # resourcemanager rpc
+      - 8033:8033 # resourcemanager admin
+      - 8088:8088 # resourcemanager http
+      # - 8090:8090 # resourcemanager https
+      # - 10200:10200 # timeline-service
+      # - 8188:8188 # timeline-service http
+      # - 8190:8190 # timeline-service https
+      # - 8047:8047 # sharedcache
+      # - 8788:8788 # sharedcache http
+      # - 8046:8046 # sharedcache uploader
+      # - 8045:8045 # sharedcache client-server
+      # - 8089:8089 # router http
+      # - 8091:8091 # router https
+      # - 8069:8069 # federation http
+      # - 8070:8070 # federation https
+  nodemanager:
+    image: apache/hadoop:3.3.6
+    hostname: nodemanager
+    command: ["yarn", "nodemanager"]
+    environment:
+      HADOOP_HOME: "/opt/hadoop"
+    env_file:
+      - ./config
+    ports:
+      - 8040:8040 # nodemanager localizer
+      - 8042:8042 # nodemanager http
+      # - 8044:8044 # nodemanager https
+      - 8048:8048 # nodemanager collector-service
+      - 8049:8049 # nodemanager amrmp
 

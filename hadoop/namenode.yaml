@@ -25,6 +25,8 @@ spec:
             - name: http
               containerPort: 9870
           env:
+            - name: HADOOP_HOME
+              value: "/opt/hadoop"
             - name: ENSURE_NAMENODE_DIR
               value: "/tmp/hadoop-root/dfs/name"
           envFrom:

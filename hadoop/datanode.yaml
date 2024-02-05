@@ -27,6 +27,8 @@ spec:
             - name: ipc
               containerPort: 9867
           envFrom:
+            - name: HADOOP_HOME
+              value: "/opt/hadoop"
             - configMapRef:
                 name: hadoop-conf
 ---
