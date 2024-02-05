@@ -3,19 +3,16 @@ services:
     image: apache/hadoop:3.3.6
     hostname: namenode
     command: ["hdfs", "namenode"]
+    environment:
+      ENSURE_NAMENODE_DIR: "/tmp/hadoop-root/dfs/name" # only namenode
+    env_file:
+      - ./config
     ports:
       - 8020:8020 # rpc
       - 9870:9870 # http
-    environment:
-      HADOOP_HOME: "/opt/hadoop"
-      ENSURE_NAMENODE_DIR: "/tmp/hadoop-root/dfs/name"
-    env_file:
-      - ./config
   datanode:
     image: apache/hadoop:3.3.6
     command: ["hdfs", "datanode"]
-    environment:
-      HADOOP_HOME: "/opt/hadoop"
     env_file:
       - ./config
     ports:
@@ -26,8 +23,6 @@ services:
     image: apache/hadoop:3.3.6
     hostname: resourcemanager
     command: ["yarn", "resourcemanager"]
-    environment:
-      HADOOP_HOME: "/opt/hadoop"
     env_file:
       - ./config
     ports:
@@ -52,8 +47,6 @@ services:
     image: apache/hadoop:3.3.6
     hostname: nodemanager
     command: ["yarn", "nodemanager"]
-    environment:
-      HADOOP_HOME: "/opt/hadoop"
     env_file:
       - ./config
     ports:
@@ -62,4 +55,14 @@ services:
       # - 8044:8044 # nodemanager https
       - 8048:8048 # nodemanager collector-service
       - 8049:8049 # nodemanager amrmp
+  jobhistory:
+    image: apache/hadoop:3.3.6
+    hostname: jobhistory
+    command: ["mapred", "historyserver", "start"]
+    env_file:
+      - ./config
+    ports:
+      - 10020:10020 # jobhistory
+      - 19888:19888 # jobhistory http
+      - 19890:19890 # jobhistory https
 
