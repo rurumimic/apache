@@ -54,7 +54,7 @@ services:
       - 8042:8042 # nodemanager http
       # - 8044:8044 # nodemanager https
       - 8048:8048 # nodemanager collector-service
-      - 8049:8049 # nodemanager amrmp
+      - 8049:8049 # nodemanager amrmproxy
   jobhistory:
     image: apache/hadoop:3.3.6
     hostname: jobhistory

@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodemanager
+spec:
+  selector:
+    matchLabels:
+      app: nodemanager # == .spec.template.metadata.lables
+  template:
+    metadata:
+      labels:
+        app: nodemanager # == .spec.selector.matchLabels
+    spec:
+      hostname: nodemanager
+      containers:
+        - name: nodemanager
+          image: apache/hadoop:3.3.6
+          command:
+            - /opt/starter.sh
+            - yarn
+            - nodemanager
+          ports:
+            - name: localizer
+              containerPort: 8040
+            - name: http
+              containerPort: 8042
+            # - name: https
+            #   containerPort: 8044
+            - name: collector
+              containerPort: 8048
+            - name: amrmproxy
+              containerPort: 8049
+            - name: nodemanager
+              containerPort: 45454
+          envFrom:
+            - configMapRef:
+                name: hadoop-conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodemanager
+spec:
+  # type: ClusterIP
+  type: NodePort
+  selector:
+    app: nodemanager # == pod template: labels
+  ports:
+    - protocol: TCP
+      name: localizer
+      port: 8040
+      targetPort: 8040 # == pod template: spec ports container port
+    - protocol: TCP
+      name: http
+      port: 8042
+      targetPort: 8042
+      nodePort: 30042 # The range of valid ports is 30000-32767
+    # - protocol: TCP
+    #   name: https
+    #   port: 8044
+    #   targetPort: 8044
+    #   nodePort: 30044 # The range of valid ports is 30000-32767
+    - protocol: TCP
+      name: collector
+      port: 8048
+      targetPort: 8048
+    - protocol: TCP
+      name: amrmproxy
+      port: 8049
+      targetPort: 8049
+    - protocol: TCP
+      name: nodemanager
+      port: 45454
+      targetPort: 45454

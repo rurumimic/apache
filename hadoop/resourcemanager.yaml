@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resourcemanager
+spec:
+  selector:
+    matchLabels:
+      app: resourcemanager # == .spec.template.metadata.lables
+  template:
+    metadata:
+      labels:
+        app: resourcemanager # == .spec.selector.matchLabels
+    spec:
+      hostname: resourcemanager
+      containers:
+        - name: resourcemanager
+          image: apache/hadoop:3.3.6
+          command:
+            - /opt/starter.sh
+            - yarn
+            - resourcemanager
+          ports:
+            - name: scheduler
+              containerPort: 8030
+            - name: tracker
+              containerPort: 8031
+            - name: rpc
+              containerPort: 8032
+            - name: admin
+              containerPort: 8033
+            - name: http
+              containerPort: 8088
+          envFrom:
+            - configMapRef:
+                name: hadoop-conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resourcemanager
+spec:
+  # type: ClusterIP
+  type: NodePort
+  selector:
+    app: resourcemanager # == pod template: labels
+  ports:
+    - protocol: TCP
+      name: scheduler
+      port: 8030
+      targetPort: 8030 # == pod template: spec ports container port
+    - protocol: TCP
+      name: tracker
+      port: 8031
+      targetPort: 8031
+    - protocol: TCP
+      name: rpc
+      port: 8032
+      targetPort: 8032
+    - protocol: TCP
+      name: admin
+      port: 8033
+      targetPort: 8033
+    - protocol: TCP
+      name: http
+      port: 8088
+      targetPort: 8088
+      nodePort: 30088 # The range of valid ports is 30000-32767
+

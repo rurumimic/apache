@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: namenode-pv
+spec:
+  capacity:
+    storage: 256Mi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Reclaim
+  storageClassName: local-storage
+  local:
+    path: /tmp/apache/namenode
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExprressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+              - docker-desktop
+

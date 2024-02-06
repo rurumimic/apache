@@ -6,17 +6,43 @@
   - [configmap.yaml](/hadoop/configmap.yaml)
   - [namenode.yaml](/hadoop/namenode.yaml)
   - [datanode.yaml](/hadoop/datanode.yaml)
+  - [namenode-pv.yaml](/hadoop/namenode-pv.yaml)
+  - [datanode-pv.yaml](/hadoop/datanode-pv.yaml)
+
+### Persistent Volume
+
+```bash
+mkdir -p /tmp/apache
+mkdir -m 777 /tmp/apache/namenode
+mkdir -m 777 /tmp/apache/datanode
+```
+
+### Start Hadoop
 
 ```bash
 kubectl apply -f configmap.yaml -n apache
+
+kubectl apply -f namenode-pv.yaml -n apache
+kubectl apply -f datanode-pv.yaml -n apache
+
 kubectl apply -f namenode.yaml -n apache
 kubectl apply -f datanode.yaml -n apache
+kubectl apply -f resourcemanager.yaml -n apache
+kubectl apply -f nodemanager.yaml -n apache
+kubectl apply -f jobhistory.yaml -n apache
 ```
 
 ```bash
-kubectl delete -f configmap.yaml -n apache
-kubectl delete -f namenode.yaml -n apache
+kubectl delete -f jobhistory.yaml -n apache
+kubectl delete -f nodemanager.yaml -n apache
+kubectl delete -f resourcemanager.yaml -n apache
 kubectl delete -f datanode.yaml -n apache
+kubectl delete -f namenode.yaml -n apache
+
+kubectl delete -f namenode-pv.yaml -n apache
+kubectl delete -f datanode-pv.yaml -n apache
+
+kubectl delete -f configmap.yaml -n apache
 ```
 
 ---
@@ -33,12 +59,16 @@ cd hadoop/docker
 docker compose up -d
 ```
 
-### Test a MapReduce job
+---
 
+## Examples
+
+### Test a MapReduce job
 
 #### Attach to Namenode
 
 ```bash
+kubectl exec --stdin --tty deploy/namenode -n apache -- /bin/bash
 docker compose exec namenode bash
 ```
 
@@ -63,13 +93,39 @@ View the input files:
 hdfs dfs -ls -R /
 ```
 
+<details>
+    <summary>List HDFS</summary>
+
+```bash
+drwxrwx---   - hadoop supergroup          0 2024-02-06 14:45 /tmp
+drwxrwx---   - hadoop supergroup          0 2024-02-06 14:45 /tmp/hadoop-yarn
+drwxrwx---   - hadoop supergroup          0 2024-02-06 14:45 /tmp/hadoop-yarn/staging
+drwxrwx---   - hadoop supergroup          0 2024-02-06 14:45 /tmp/hadoop-yarn/staging/history
+drwxrwx---   - hadoop supergroup          0 2024-02-06 14:45 /tmp/hadoop-yarn/staging/history/done
+drwxrwxrwt   - hadoop supergroup          0 2024-02-06 14:45 /tmp/hadoop-yarn/staging/history/done_intermediate
+drwxr-xr-x   - hadoop supergroup          0 2024-02-06 14:56 /user
+drwxr-xr-x   - hadoop supergroup          0 2024-02-06 14:56 /user/hadoop
+drwxr-xr-x   - hadoop supergroup          0 2024-02-06 14:56 /user/hadoop/input
+-rw-r--r--   1 hadoop supergroup       1402 2024-02-06 14:56 /user/hadoop/input/capacity-scheduler.xml
+-rw-r--r--   1 hadoop supergroup        189 2024-02-06 14:56 /user/hadoop/input/core-site.xml
+-rw-r--r--   1 hadoop supergroup      11765 2024-02-06 14:56 /user/hadoop/input/hadoop-policy.xml
+-rw-r--r--   1 hadoop supergroup        683 2024-02-06 14:56 /user/hadoop/input/hdfs-rbf-site.xml
+-rw-r--r--   1 hadoop supergroup        185 2024-02-06 14:56 /user/hadoop/input/hdfs-site.xml
+-rw-r--r--   1 hadoop supergroup        620 2024-02-06 14:56 /user/hadoop/input/httpfs-site.xml
+-rw-r--r--   1 hadoop supergroup       3518 2024-02-06 14:56 /user/hadoop/input/kms-acls.xml
+-rw-r--r--   1 hadoop supergroup        682 2024-02-06 14:56 /user/hadoop/input/kms-site.xml
+-rw-r--r--   1 hadoop supergroup        589 2024-02-06 14:56 /user/hadoop/input/mapred-site.xml
+-rw-r--r--   1 hadoop supergroup        724 2024-02-06 14:56 /user/hadoop/input/yarn-site.xml
+```
+
+</details>
+
 #### Run a MapReduce job
 
 Check your hadoop version:
 
 ```bash
-hadoop jar \
-$HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.y.z.jar \
+hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.y.z.jar \
 grep input output 'dfs[a-z.]+'
 ```
 
@@ -89,11 +145,21 @@ hdfs dfs -cat output/*
 
 ## Web UI
 
-- Namenode: [http://localhost:9870](http://localhost:9870)
-- Datanode: [http://localhost:9864](http://localhost:9864)
-- ResourceManager: [http://localhost:8088](http://localhost:8088)
-- NodeManager: [http://localhost:8042](http://localhost:8042)
-- JobHistory: [http://localhost:8188](http://localhost:8188)
+- Namenode
+  - kube: [http://localhost:30870](http://localhost:30870)
+  - docker: [http://localhost:9870](http://localhost:9870)
+- Datanode
+  - kube: [http://localhost:30864](http://localhost:30864)
+  - docker: [http://localhost:9864](http://localhost:9864)
+- ResourceManager
+  - kube: [http://localhost:30088](http://localhost:30088)
+  - docker: [http://localhost:8088](http://localhost:8088)
+- NodeManager
+  - kube: [http://localhost:30042](http://localhost:30042)
+  - docker: [http://localhost:8042](http://localhost:8042)
+- JobHistory
+  - kube: [http://localhost:30888](http://localhost:30888)
+  - docker: [http://localhost:19888](http://localhost:19888)
 
 ### Namenode
 

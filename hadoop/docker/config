@@ -8,7 +8,7 @@ MAPRED-SITE.XML_mapreduce.framework.name=yarn
 MAPRED-SITE.XML_yarn.app.mapreduce.am.env=HADOOP_MAPRED_HOME=$HADOOP_HOME
 MAPRED-SITE.XML_mapreduce.map.env=HADOOP_MAPRED_HOME=$HADOOP_HOME
 MAPRED-SITE.XML_mapreduce.reduce.env=HADOOP_MAPRED_HOME=$HADOOP_HOME
-MAPRED-SITE.XML_mapreduce.application.classpath=$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*,$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*
+MAPRED-SITE.XML_mapreduce.application.classpath=$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*,$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib-examples/*
 YARN-SITE.XML_yarn.resourcemanager.hostname=resourcemanager
 YARN-SITE.XML_yarn.nodemanager.pmem-check-enabled=false
 YARN-SITE.XML_yarn.nodemanager.delete.debug-delay-sec=600
