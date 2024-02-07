@@ -1,8 +1,9 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: nodemanager
 spec:
+  serviceName: nodemanager-headless
   selector:
     matchLabels:
       app: nodemanager # == .spec.template.metadata.lables
@@ -11,7 +12,6 @@ spec:
       labels:
         app: nodemanager # == .spec.selector.matchLabels
     spec:
-      hostname: nodemanager
       containers:
         - name: nodemanager
           image: apache/hadoop:3.3.6
@@ -39,10 +39,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: nodemanager
+  name: nodemanager-headless
 spec:
-  # type: ClusterIP
-  type: NodePort
+  type: ClusterIP
+  clusterIP: None
   selector:
     app: nodemanager # == pod template: labels
   ports:
@@ -54,12 +54,10 @@ spec:
       name: http
       port: 8042
       targetPort: 8042
-      nodePort: 30042 # The range of valid ports is 30000-32767
     # - protocol: TCP
     #   name: https
     #   port: 8044
     #   targetPort: 8044
-    #   nodePort: 30044 # The range of valid ports is 30000-32767
     - protocol: TCP
       name: collector
       port: 8048
@@ -72,3 +70,24 @@ spec:
       name: nodemanager
       port: 45454
       targetPort: 45454
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodemanager-nodeport
+spec:
+  type: NodePort
+  selector:
+    app: nodemanager # == pod template: labels
+  ports:
+    - protocol: TCP
+      name: http
+      port: 8042
+      targetPort: 8042
+      nodePort: 30042 # The range of valid ports is 30000-32767
+    # - protocol: TCP
+    #   name: https
+    #   port: 8044
+    #   targetPort: 8044
+    #   nodePort: 30044 # The range of valid ports is 30000-32767
+

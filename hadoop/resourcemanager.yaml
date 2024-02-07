@@ -1,8 +1,9 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: resourcemanager
 spec:
+  serviceName: resourcemanager-headless
   selector:
     matchLabels:
       app: resourcemanager # == .spec.template.metadata.lables
@@ -11,7 +12,6 @@ spec:
       labels:
         app: resourcemanager # == .spec.selector.matchLabels
     spec:
-      hostname: resourcemanager
       containers:
         - name: resourcemanager
           image: apache/hadoop:3.3.6
@@ -37,10 +37,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: resourcemanager
+  name: resourcemanager-headless
 spec:
-  # type: ClusterIP
-  type: NodePort
+  type: ClusterIP
+  clusterIP: None
   selector:
     app: resourcemanager # == pod template: labels
   ports:
@@ -60,6 +60,20 @@ spec:
       name: admin
       port: 8033
       targetPort: 8033
+    - protocol: TCP
+      name: http
+      port: 8088
+      targetPort: 8088
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resourcemanager-nodeport
+spec:
+  type: NodePort
+  selector:
+    app: resourcemanager # == pod template: labels
+  ports:
     - protocol: TCP
       name: http
       port: 8088

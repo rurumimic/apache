@@ -65,10 +65,23 @@ docker compose up -d
 
 ### Test a MapReduce job
 
+#### Check Resources
+
+```bash
+kubectl get sts -n apache
+
+NAME              READY
+datanode          1/1
+jobhistory        1/1
+namenode          1/1
+nodemanager       1/1
+resourcemanager   1/1
+```
+
 #### Attach to Namenode
 
 ```bash
-kubectl exec --stdin --tty deploy/namenode -n apache -- /bin/bash
+kubectl exec --stdin --tty sts/namenode -n apache -- /bin/bash
 docker compose exec namenode bash
 ```
 
