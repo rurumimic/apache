@@ -4,7 +4,7 @@ services:
     hostname: namenode
     command: ["hdfs", "namenode"]
     environment:
-      ENSURE_NAMENODE_DIR: "/tmp/hadoop-root/dfs/name" # only namenode
+      ENSURE_NAMENODE_DIR: "/data/dfs/name" # dfs.namenode.name.dir
     env_file:
       - ./config
     ports:

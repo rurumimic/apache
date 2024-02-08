@@ -3,7 +3,8 @@ kind: StatefulSet
 metadata:
   name: datanode
 spec:
-  serviceName: datanode-headless
+  serviceName: datanode-svc
+  replicas: 1
   selector:
     matchLabels:
       app: datanode # == .spec.template.metadata.lables
@@ -29,11 +30,24 @@ spec:
           envFrom:
             - configMapRef:
                 name: hadoop-conf
+          volumeMounts:
+            - name: datanode-pvc
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: datanode-pvc
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 256Mi
+        storageClassName: datanode-storage
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: datanode-headless
+  name: datanode-svc
 spec:
   type: ClusterIP
   clusterIP: None

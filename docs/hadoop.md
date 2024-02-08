@@ -9,7 +9,7 @@
   - [namenode-pv.yaml](/hadoop/namenode-pv.yaml)
   - [datanode-pv.yaml](/hadoop/datanode-pv.yaml)
 
-### Persistent Volume
+### Persistent Volume on Host
 
 ```bash
 mkdir -p /tmp/apache
@@ -22,6 +22,9 @@ mkdir -m 777 /tmp/apache/datanode
 ```bash
 kubectl apply -f configmap.yaml -n apache
 
+kubectl apply -f namenode-storageclass.yaml -n apache
+kubectl apply -f datanode-storageclass.yaml -n apache
+
 kubectl apply -f namenode-pv.yaml -n apache
 kubectl apply -f datanode-pv.yaml -n apache
 
@@ -31,6 +34,23 @@ kubectl apply -f resourcemanager.yaml -n apache
 kubectl apply -f nodemanager.yaml -n apache
 kubectl apply -f jobhistory.yaml -n apache
 ```
+
+### Check Resources
+
+```bash
+kubectl get cm -n apache
+kubectl describe cm hadoop-conf -n apache
+
+kubectl get pv -n apache
+kubectl get pvc -n apache
+kubectl describe pv namenode-pv -n apache
+kubectl describe pv datanode-pv -n apache
+
+kubectl get sts -n apache
+kubectl get svc -n apache
+```
+
+### Stop Hadoop
 
 ```bash
 kubectl delete -f jobhistory.yaml -n apache
@@ -42,7 +62,42 @@ kubectl delete -f namenode.yaml -n apache
 kubectl delete -f namenode-pv.yaml -n apache
 kubectl delete -f datanode-pv.yaml -n apache
 
+kubectl delete -f namenode-storageclass.yaml -n apache
+kubectl delete -f datanode-storageclass.yaml -n apache
+
 kubectl delete -f configmap.yaml -n apache
+```
+
+#### When stuck in terminating state
+
+```bash
+kubectl get pv -n apache
+
+NAME          CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS        CLAIM                            STORAGECLASS    VOLUMEATTRIBUTESCLASS   REASON   AGE
+namenode-pv   128Mi      RWO            Retain           Terminating   apache/namenode-pvc-namenode-0   local-storage   <unset>                          13m
+```
+
+##### option 1
+
+```bash
+kubectl patch -n apache pv namenode-pv -p '{"metadata":{"finalizers":null}}'
+
+persistentvolume/namenode-pv patched
+```
+
+##### option 2
+
+```bash
+kubectl edit -n apache pv namenode-pv
+```
+
+Remove the finalizers section and save the file.
+
+```yaml
+# ...
+  finalizers:
+  - kubernetes.io/pv-protection
+# ...
 ```
 
 ---

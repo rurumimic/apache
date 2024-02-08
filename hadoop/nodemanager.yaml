@@ -3,7 +3,8 @@ kind: StatefulSet
 metadata:
   name: nodemanager
 spec:
-  serviceName: nodemanager-headless
+  serviceName: nodemanager-svc
+  replicas: 1
   selector:
     matchLabels:
       app: nodemanager # == .spec.template.metadata.lables
@@ -39,7 +40,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: nodemanager-headless
+  name: nodemanager-svc
 spec:
   type: ClusterIP
   clusterIP: None

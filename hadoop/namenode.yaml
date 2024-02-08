@@ -3,7 +3,8 @@ kind: StatefulSet
 metadata:
   name: namenode
 spec:
-  serviceName: namenode-headless
+  serviceName: namenode-svc
+  replicas: 1
   selector:
     matchLabels:
       app: namenode # == .spec.template.metadata.lables
@@ -25,16 +26,29 @@ spec:
             - name: http
               containerPort: 9870
           env:
-            - name: ENSURE_NAMENODE_DIR # only namenode
-              value: "/tmp/hadoop-root/dfs/name"
+            - name: ENSURE_NAMENODE_DIR # dfs.namenode.name.dir
+              value: "/data/dfs/name"
           envFrom:
             - configMapRef:
                 name: hadoop-conf
+          volumeMounts:
+            - name: namenode-pvc
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: namenode-pvc
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 128Mi
+        storageClassName: namenode-storage
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: namenode-headless
+  name: namenode-svc
 spec:
   type: ClusterIP
   clusterIP: None

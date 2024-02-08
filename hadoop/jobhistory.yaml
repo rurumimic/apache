@@ -3,7 +3,8 @@ kind: StatefulSet
 metadata:
   name: jobhistory
 spec:
-  serviceName: jobhistory-headless
+  serviceName: jobhistory-svc
+  replicas: 1
   selector:
     matchLabels:
       app: jobhistory # == .spec.template.metadata.lables
@@ -35,7 +36,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: jobhistory-headless
+  name: jobhistory-svc
 spec:
   type: ClusterIP
   selector:
