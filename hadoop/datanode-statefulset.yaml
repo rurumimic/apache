@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: datanode
+spec:
+  serviceName: datanode-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: datanode # == .spec.template.metadata.lables
+  template:
+    metadata:
+      labels:
+        app: datanode # == .spec.selector.matchLabels
+    spec:
+      containers:
+        - name: datanode
+          image: apache/hadoop:3.3.6
+          command:
+            - /opt/starter.sh
+            - hdfs
+            - datanode
+          ports:
+            - name: http
+              containerPort: 9864
+            - name: transfer
+              containerPort: 9866
+            - name: ipc
+              containerPort: 9867
+          envFrom:
+            - configMapRef:
+                name: hadoop-conf
+          volumeMounts:
+            - name: datanode-pvc
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: datanode-pvc
+      spec:
+        storageClassName: datanode-storage
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 256Mi
+

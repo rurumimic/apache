@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: datanode-pv
+  labels:
+    type: datanode
+spec:
+  capacity:
+    storage: 256Mi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: datanode-storage
+  hostPath:
+    # It is not based on the path of the host machine.
+    # This is the internal virtual path of a local k8s cluster process
+    # such as docker-desktop or minikube.
+    path: /tmp/apache/datanode
+    type: DirectoryOrCreate
+

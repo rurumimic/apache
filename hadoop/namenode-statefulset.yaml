@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: namenode
+spec:
+  serviceName: namenode-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: namenode # == .spec.template.metadata.lables
+  template:
+    metadata:
+      labels:
+        app: namenode # == .spec.selector.matchLabels
+    spec:
+      containers:
+        - name: namenode
+          image: apache/hadoop:3.3.6
+          command:
+            - /opt/starter.sh
+            - hdfs
+            - namenode
+          ports:
+            - name: rpc
+              containerPort: 8020
+            - name: http
+              containerPort: 9870
+          env:
+            - name: ENSURE_NAMENODE_DIR # hdfs-default.xml: dfs.namenode.name.dir
+              value: "/data/dfs/name"
+          envFrom:
+            - configMapRef:
+                name: hadoop-conf
+          volumeMounts:
+            - name: namenode-pvc
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: namenode-pvc
+      spec:
+        storageClassName: namenode-storage
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 128Mi
+

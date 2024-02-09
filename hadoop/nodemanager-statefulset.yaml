@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nodemanager
+spec:
+  serviceName: nodemanager-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodemanager # == .spec.template.metadata.lables
+  template:
+    metadata:
+      labels:
+        app: nodemanager # == .spec.selector.matchLabels
+    spec:
+      containers:
+        - name: nodemanager
+          image: apache/hadoop:3.3.6
+          command:
+            - /opt/starter.sh
+            - yarn
+            - nodemanager
+          ports:
+            - name: localizer
+              containerPort: 8040
+            - name: http
+              containerPort: 8042
+            # - name: https
+            #   containerPort: 8044
+            - name: collector
+              containerPort: 8048
+            - name: amrmproxy
+              containerPort: 8049
+            - name: nodemanager
+              containerPort: 45454
+          envFrom:
+            - configMapRef:
+                name: hadoop-conf
+
