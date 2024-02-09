@@ -12,7 +12,7 @@
 ### Commands
 
 <details>
-    <summary>Clean up Hadoop</summary>
+    <summary>Start a Hadoop Cluster</summary>
 
 ```bash
 kubectl apply -f configmap.yaml -n apache
