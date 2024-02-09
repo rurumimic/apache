@@ -86,7 +86,7 @@ kubectl get svc -n apache
 
 </details>
 
-#### When stuck in terminating state
+#### Trouble Shoot: When stuck in terminating state
 
 ```bash
 kubectl get pv -n apache
