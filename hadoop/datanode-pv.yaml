@@ -1,21 +1,63 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: datanode-pv
+  name: datanode-0-pv
   labels:
     type: datanode
 spec:
   capacity:
-    storage: 256Mi
+    storage: 128Mi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
+  persistentVolumeReclaimPolicy: Delete
   storageClassName: datanode-storage
   hostPath:
     # It is not based on the path of the host machine.
-    # This is the internal virtual path of a local k8s cluster process
+    # This is the internal path of a local k8s cluster vm
     # such as docker-desktop or minikube.
-    path: /tmp/apache/datanode
+    path: /tmp/apache/datanode-0
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: datanode-1-pv
+  labels:
+    type: datanode
+spec:
+  capacity:
+    storage: 128Mi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: datanode-storage
+  hostPath:
+    # It is not based on the path of the host machine.
+    # This is the internal path of a local k8s cluster vm
+    # such as docker-desktop or minikube.
+    path: /tmp/apache/datanode-1
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: datanode-2-pv
+  labels:
+    type: datanode
+spec:
+  capacity:
+    storage: 128Mi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: datanode-storage
+  hostPath:
+    # It is not based on the path of the host machine.
+    # This is the internal path of a local k8s cluster vm
+    # such as docker-desktop or minikube.
+    path: /tmp/apache/datanode-2
     type: DirectoryOrCreate
 
