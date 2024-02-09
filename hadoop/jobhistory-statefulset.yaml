@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: jobhistory
+spec:
+  serviceName: jobhistory-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jobhistory # == .spec.template.metadata.lables
+  template:
+    metadata:
+      labels:
+        app: jobhistory # == .spec.selector.matchLabels
+    spec:
+      hostname: jobhistory
+      containers:
+        - name: jobhistory
+          image: apache/hadoop:3.3.6
+          command:
+            - /opt/starter.sh
+            - mapred
+            - historyserver
+            - start
+          ports:
+            - name: jobhistory
+              containerPort: 10020
+            - name: http
+              containerPort: 19888
+            # - name: https
+            #  containerPort: 19890
+          envFrom:
+            - configMapRef:
+                name: hadoop-conf
+

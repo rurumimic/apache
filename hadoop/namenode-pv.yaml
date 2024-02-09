@@ -12,14 +12,10 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: namenode-storage
-  local:
+  hostPath:
+    # It is not based on the path of the host machine.
+    # This is the internal virtual path of a local k8s cluster process
+    # such as docker-desktop or minikube.
     path: /tmp/apache/namenode
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-        - matchExpressions:
-          - key: kubernetes.io/hostname
-            operator: In
-            values:
-              - docker-desktop
+    type: DirectoryOrCreate
 
