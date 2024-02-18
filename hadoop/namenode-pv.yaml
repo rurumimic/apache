@@ -10,11 +10,11 @@ spec:
   volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
+  persistentVolumeReclaimPolicy: Delete
   storageClassName: namenode-storage
   hostPath:
     # It is not based on the path of the host machine.
-    # This is the internal virtual path of a local k8s cluster process
+    # This is the internal path of a local k8s cluster vm
     # such as docker-desktop or minikube.
     path: /tmp/apache/namenode
     type: DirectoryOrCreate
